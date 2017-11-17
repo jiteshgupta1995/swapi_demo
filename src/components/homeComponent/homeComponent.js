@@ -25,6 +25,10 @@ class HomeComponent extends Component {
         var api = [];
         const { cookies } = self.props;
         var apiBaseUrl = "http://swapi.co/api/people/?search=";
+        if(!cookies.get('name')){
+            this.setState({redirectTo: true});
+            return;
+        }
         axios.post(apiBaseUrl + cookies.get('name')).then(function(resp) {
             data = resp.data.results[0];
             // console.warn(data);
@@ -73,7 +77,7 @@ class HomeComponent extends Component {
     signout(){
         const { cookies } = this.props;
         cookies.remove('name');
-        this.setState({redirectTo: true})
+        this.setState({redirectTo: true});
     }
 
     render() {

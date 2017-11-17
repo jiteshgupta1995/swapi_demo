@@ -30,7 +30,9 @@ class LoginComponent extends Component {
                 if (resp.data.results[i].name === self.state.username &&
                     resp.data.results[i].birth_year === self.state.dob) {
                     const { cookies } = self.props;
-                    cookies.set('name', self.state.username, '/' );
+                    let d = new Date();
+                    d.setTime(d.getTime() + (10*60*1000));
+                    cookies.set('name', self.state.username,{path:'/', expires: d} );
                     self.props.rootUser(self.state.username);
                     self.setState({auth: true});
                     break;
