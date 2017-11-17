@@ -35,6 +35,10 @@ class HomeComponent extends Component {
                             data[item][i] = res.data;
                         }));
                     });
+                }else if(data[item].indexOf("http") > -1){
+                    return api.push(axios.get(data[item]).then(function(res) {
+                        data[item] = res.data;
+                    }));
                 }
             });
         }).then(function() {
@@ -51,22 +55,33 @@ class HomeComponent extends Component {
     }
 
     static getUserFull(data) {
-        if (!Array.isArray(data)) {
+        if (!Array.isArray(data) && typeof data !== "object") {
             return data;
+        }else if(!Array.isArray(data) && typeof data === "object"){
+            return (
+                <table className="table table-bordered">
+                    <tbody>
+                        {Object.keys(data).map((key, pos) => (
+                            <tr key={pos}><td>{key}: </td><td>{data[key]}</td></tr>
+                        ))}
+                    </tbody>
+                </table>
+            );
+        }else{
+            return(
+                data.map((item,i) =>{
+                    return (
+                        <table className="table table-bordered" key={i}>
+                            <tbody>
+                                {Object.keys(item).map((key, pos) => (
+                                    <tr key={pos}><td>{key}: </td><td>{item[key]}</td></tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    );
+                })
+            );
         }
-        return(
-            data.map((item,i) =>{
-                return (
-                    <table className="table table-bordered" key={i}>
-                        <tbody>
-                            {Object.keys(item).map((key, pos) => (
-                                <tr key={pos}><td>{key}: </td><td>{item[key]}</td></tr>
-                            ))}
-                        </tbody>
-                    </table>
-                );
-            })
-        );
     }
 
     signout(){
