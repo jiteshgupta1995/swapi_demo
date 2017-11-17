@@ -55,17 +55,17 @@ class HomeComponent extends Component {
             return data;
         }
         return(
-            <table className="table table-bordered">
-                <tbody>
-                    {data.map((item) =>{
-                        return (
-                            Object.keys(item).map((key, pos) => (
+            data.map((item,i) =>{
+                return (
+                    <table className="table table-bordered" key={i}>
+                        <tbody>
+                            {Object.keys(item).map((key, pos) => (
                                 <tr key={pos}><td>{key}: </td><td>{item[key]}</td></tr>
-                            ))
-                        );
-                    })}
-                </tbody>
-            </table>
+                            ))}
+                        </tbody>
+                    </table>
+                );
+            })
         );
     }
 
@@ -77,16 +77,16 @@ class HomeComponent extends Component {
 
     render() {
         let data = <tr></tr>;
-        if (!this.state.userLoad) {
+        if (this.state.userLoad) {
             // this.getUserInfo();
-            data = <tr><td><div className="loader"></div></td></tr>;
-        } else {
             data = Object.keys(this.state.userInfo).map((item, i) => (
                 <tr key={i}>
                     <td>{item}</td>
                     <td>{HomeComponent.getUserFull(this.state.userInfo[item])}</td>
                 </tr>
             ));
+        } else {
+            data = <tr><td><div className="loader"></div></td></tr>;
         }
         return (
             <div className="container">
