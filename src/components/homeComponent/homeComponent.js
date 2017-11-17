@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import PropTypes, {instanceOf} from "prop-types";
 import RaisedButton from "material-ui/RaisedButton";
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import { Redirect } from "react-router-dom";
 import axios from "axios";
 import { withCookies, Cookies } from 'react-cookie';
 
@@ -13,7 +12,6 @@ class HomeComponent extends Component {
         super(props);
         // this.getUserInfo = this.getUserInfo.bind(this);
         this.state = {
-            redirectTo: false,
             userLoad: false,
             userInfo: {},
         }
@@ -31,7 +29,6 @@ class HomeComponent extends Component {
         }
         axios.get(apiBaseUrl + cookies.get('name')).then(function(resp) {
             data = resp.data.results[0];
-            // console.warn(data);
             return Object.keys(data).map(function(item) {
                 if(Array.isArray(data[item])){
                     return data[item].map((d,i) => {
@@ -76,17 +73,11 @@ class HomeComponent extends Component {
     signout(){
         const { cookies } = this.props;
         cookies.remove('name');
-        this.setState({redirectTo: true});
+        this.props.history.push('/');
     }
 
     render() {
-        let redirect = <div></div>;
         let data = <tr></tr>;
-        if (this.state.redirectTo) {
-            redirect = <Redirect to={{
-                pathname: '/login',
-            }}/>;
-        }
         if (this.props.user.length && !this.state.userLoad) {
             // this.getUserInfo();
             data = <tr><td><div className="loader"></div></td></tr>;
@@ -103,7 +94,6 @@ class HomeComponent extends Component {
                 <MuiThemeProvider>
                     <div className="row">
                         <div className="row">
-                            {redirect}
                             <div className="col-xs-offset-4 col-xs-4">
                                 Welcome! {this.props.user[0]}
                             </div>
@@ -136,6 +126,7 @@ function mapStateToProps(state) {
 
 HomeComponent.propTypes = {
     user: PropTypes.array.isRequired,
+    history: PropTypes.object.isRequired,
     cookies: instanceOf(Cookies).isRequired,
 };
 

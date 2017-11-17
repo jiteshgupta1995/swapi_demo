@@ -6,7 +6,6 @@ import axios from "axios";
 import { connect } from 'react-redux';
 import rootUser from "../../actions";
 import PropTypes, { instanceOf } from "prop-types";
-import {Redirect} from "react-router-dom";
 import { withCookies, Cookies } from 'react-cookie';
 
 class LoginComponent extends Component {
@@ -17,7 +16,6 @@ class LoginComponent extends Component {
         this.state = {
             username: '',
             dob: '',
-            auth: false,
         };
     }
 
@@ -34,7 +32,7 @@ class LoginComponent extends Component {
                     d.setTime(d.getTime() + (10*60*1000));
                     cookies.set('name', self.state.username,{path:'/', expires: d} );
                     self.props.rootUser(self.state.username);
-                    self.setState({auth: true});
+                    self.props.history.push('/home');
                     break;
                 }
             }
@@ -47,18 +45,10 @@ class LoginComponent extends Component {
     }
 
     render() {
-        let redirect = <div></div>;
-        if(this.state.auth){
-            redirect = <Redirect to={{
-                pathname: '/home',
-            }}/>;
-        }
-        
         return (
             <div className="container">
                 <MuiThemeProvider>
                     <div className="row">
-                        {redirect}
                         <div className="col-xs-offset-4 col-xs-4">
                             <TextField
                                 hintText="Enter your Username"

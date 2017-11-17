@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 import LoginComponent from "./components/loginComponent/loginComponent";
 import HomeComponent from "./components/homeComponent/homeComponent";
@@ -9,6 +8,7 @@ import rootReducer from './reducers';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import { CookiesProvider } from 'react-cookie';
+import {Switch} from "react-router";
 
 
 const store = createStore(rootReducer);
@@ -18,11 +18,10 @@ ReactDOM.render(
     <Provider store={store}>
         <CookiesProvider>
             <BrowserRouter>
-                <div>
-                    <Route path='/' component={App} />
-                    <Route path='/login' component={LoginComponent} />
+                <Switch>
+                    <Route exact path='/' component={LoginComponent} />
                     <Route path='/home' component={HomeComponent} />
-                </div>
+                </Switch>
             </BrowserRouter>
         </CookiesProvider>
     </Provider>, document.getElementById('root'));
