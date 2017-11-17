@@ -23,8 +23,8 @@ class LoginComponent extends Component {
 
     login() {
         var self = this;
-        var apiBaseUrl = "http://swapi.co/api/people/?search=";
-        axios.post(apiBaseUrl + self.state.username).then(function(resp) {
+        var apiBaseUrl = "https://swapi.co/api/people/?search=";
+        axios.get(apiBaseUrl + self.state.username).then(function(resp) {
             var len = resp.data.results.length;
             for (var i = 0; i < len; i++) {
                 if (resp.data.results[i].name === self.state.username &&

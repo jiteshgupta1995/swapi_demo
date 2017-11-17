@@ -24,19 +24,18 @@ class HomeComponent extends Component {
         var data = {};
         var api = [];
         const { cookies } = self.props;
-        var apiBaseUrl = "http://swapi.co/api/people/?search=";
+        var apiBaseUrl = "https://swapi.co/api/people/?search=";
         if(!cookies.get('name')){
             this.setState({redirectTo: true});
             return;
         }
-        axios.post(apiBaseUrl + cookies.get('name')).then(function(resp) {
+        axios.get(apiBaseUrl + cookies.get('name')).then(function(resp) {
             data = resp.data.results[0];
             // console.warn(data);
             return Object.keys(data).map(function(item) {
                 if(Array.isArray(data[item])){
                     return data[item].map((d,i) => {
-                        data[item][i] = d.replace("https", "http");
-                        return api.push(axios.post(data[item][i]).then(function(res) {
+                        return api.push(axios.get(data[item][i]).then(function(res) {
                             data[item][i] = res.data;
                         }));
                     });
