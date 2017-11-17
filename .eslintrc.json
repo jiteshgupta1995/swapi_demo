@@ -1,0 +1,74 @@
+{
+    "extends": [
+        "eslint:recommended",
+        "plugin:import/errors",
+        "plugin:import/warnings",
+        "plugin:react/recommended"
+    ],
+    "env":
+    {
+        "browser": true,
+        "commonjs": true,
+        "es6": true,
+        "node": true,
+        "mocha": true
+    },
+    "parserOptions":
+    {
+        "ecmaFeatures":
+        {
+            "experimentalObjectRestSpread": true,
+            "jsx": true
+        },
+        "sourceType": "module"
+    },
+    "plugins": [
+        "react",
+        "import"
+    ],
+    "rules":
+    {
+        "class-methods-use-this": ["error"],
+        "comma-dangle": ["error",
+        {
+            "arrays": "always-multiline",
+            "objects": "always-multiline",
+            "imports": "always-multiline",
+            "exports": "always-multiline",
+            "functions": "ignore"
+        }],
+        "generator-star-spacing": ["error", "before"],
+        "import/extensions": ["off"],
+        "indent": ["error", 4],
+        "max-len": ["error",
+        {
+            "code": 110,
+            "ignoreUrls": true,
+            "ignoreRegExpLiterals": true,
+            "tabWidth": 2
+        }],
+        "no-param-reassign": ["error",
+        {
+            "props": false
+        }],
+        "no-plusplus": ["off"],
+        "no-restricted-syntax": [
+            "error",
+            "ForInStatement",
+            "LabeledStatement",
+            "WithStatement"
+        ],
+        "no-underscore-dangle": ["error",
+        {
+            "allowAfterThis": true
+        }],
+        "react/forbid-prop-types": ["off"],
+        "react/require-default-props": ["off"],
+        "react/require-extension": ["off"],
+        "react/jsx-indent": ["error", 4],
+        "react/jsx-indent-props": ["error", 4],
+        "no-console": ["error", { "allow": ["warn", "error"] }],
+        "no-trailing-spaces": ["error", { "skipBlankLines": true }],
+        "no-multi-spaces": "error"
+    }
+}
