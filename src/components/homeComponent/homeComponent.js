@@ -10,7 +10,6 @@ class HomeComponent extends Component {
 
     constructor(props) {
         super(props);
-        // this.getUserInfo = this.getUserInfo.bind(this);
         this.state = {
             userLoad: false,
             userInfo: {},
@@ -24,7 +23,7 @@ class HomeComponent extends Component {
         const { cookies } = self.props;
         var apiBaseUrl = "https://swapi.co/api/people/?search=";
         if(!cookies.get('name')){
-            this.setState({redirectTo: true});
+            this.props.history.push("/");
             return;
         }
         axios.get(apiBaseUrl + cookies.get('name')).then(function(resp) {
@@ -78,7 +77,7 @@ class HomeComponent extends Component {
 
     render() {
         let data = <tr></tr>;
-        if (this.props.user.length && !this.state.userLoad) {
+        if (!this.state.userLoad) {
             // this.getUserInfo();
             data = <tr><td><div className="loader"></div></td></tr>;
         } else {

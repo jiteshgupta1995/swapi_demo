@@ -19,6 +19,14 @@ class LoginComponent extends Component {
         };
     }
 
+    componentDidMount() {
+        const { cookies } = this.props;
+        if(cookies.get('name')){
+            this.props.history.push("/home");
+            return;
+        }
+    }
+
     login() {
         var self = this;
         var apiBaseUrl = "https://swapi.co/api/people/?search=";
@@ -76,6 +84,7 @@ class LoginComponent extends Component {
 LoginComponent.propTypes = {
     addUser: PropTypes.func,
     cookies: instanceOf(Cookies).isRequired,
+    history: PropTypes.object.isRequired,
 };
 
 export default connect( null, {rootUser})(withCookies(LoginComponent));
