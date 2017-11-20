@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import PropTypes, {instanceOf} from "prop-types";
+import PropTypes from "prop-types";
 import RaisedButton from "material-ui/RaisedButton";
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from "axios";
-import { withCookies, Cookies } from 'react-cookie';
 
 class HomeComponent extends Component {
 
@@ -20,13 +19,8 @@ class HomeComponent extends Component {
         var self = this;
         var data = {};
         var api = [];
-        const { cookies } = self.props;
         var apiBaseUrl = "https://swapi.co/api/people/?search=";
-        if(!cookies.get('name')){
-            this.props.history.push("/");
-            return;
-        }
-        axios.get(apiBaseUrl + cookies.get('name')).then(function(resp) {
+        axios.get(apiBaseUrl + this.props.user).then(function(resp) {
             data = resp.data.results[0];
             return Object.keys(data).map(function(item) {
                 if(Array.isArray(data[item])){
@@ -84,11 +78,6 @@ class HomeComponent extends Component {
         }
     }
 
-    signout(){
-        const { cookies } = this.props;
-        cookies.remove('name');
-        this.props.history.push('/');
-    }
 
     render() {
         let data = <tr></tr>;
@@ -109,11 +98,11 @@ class HomeComponent extends Component {
                     <div className="row">
                         <div className="row">
                             <div className="col-xs-offset-4 col-xs-4">
-                                Welcome! {this.props.user[0]}
+                                Welcome! {this.props.user}
                             </div>
                             <div className="col-xs-4">
                                 <RaisedButton label="Signout" primary={true}
-                                    onClick={() => this.signout()}/>
+                                    onClick={() => this.props.history.push('/')}/>
                             </div>
                         </div>
                         <div className="row">
@@ -134,14 +123,13 @@ class HomeComponent extends Component {
 
 function mapStateToProps(state) {
     return {
-        user: state.user,
+        user: state,
     };
 }
 
 HomeComponent.propTypes = {
-    user: PropTypes.array.isRequired,
+    user: PropTypes.string.isRequired,
     history: PropTypes.object.isRequired,
-    cookies: instanceOf(Cookies).isRequired,
 };
 
-export default connect(mapStateToProps, null)(withCookies(HomeComponent));
+export default connect(mapStateToProps, null)(HomeComponent);

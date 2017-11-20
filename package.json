@@ -13,11 +13,11 @@
     "minimatch": "^3.0.4",
     "prop-types": "^15.6.0",
     "react": "^16.1.1",
-    "react-cookie": "^2.1.1",
     "react-dom": "^16.1.1",
     "react-redux": "^5.0.6",
-    "react-router": "^4.2.0",
+    "react-router": "^4.0.0",
     "react-router-dom": "^4.2.2",
+    "react-router-redux": "^4.0.8",
     "react-scripts": "1.0.17",
     "redux": "^3.7.2"
   },
