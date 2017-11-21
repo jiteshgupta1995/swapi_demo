@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import RaisedButton from "material-ui/RaisedButton";
 import TextField from "material-ui/TextField";
-import axios from "axios";
+import {apiCall} from "../../helper";
 import { connect } from 'react-redux';
 import rootUser from "../../actions";
 import PropTypes from "prop-types";
@@ -15,13 +15,14 @@ class LoginComponent extends Component {
         this.state = {
             username: '',
             dob: '',
+            error: '',
         };
     }
 
     login() {
         var self = this;
         var apiBaseUrl = "https://swapi.co/api/people/?search=";
-        axios.get(apiBaseUrl + self.state.username).then(function(resp) {
+        apiCall(apiBaseUrl + self.state.username).then(function(resp) {
             var len = resp.data.results.length;
             for (var i = 0; i < len; i++) {
                 if (resp.data.results[i].name === self.state.username &&
@@ -29,14 +30,24 @@ class LoginComponent extends Component {
                     self.props.rootUser(self.state.username);
                     self.props.history.push('/home');
                     break;
+                }else if(resp.data.results[i].name === self.state.username &&
+                    resp.data.results[i].birth_year !== self.state.dob){
+                    self.setState({error: "DOB does not match"});
+                    setTimeout(function() { self.setState({error: ""}); }, 3000);
+                    break;
                 }
             }
             if (i === len) {
-                alert("Username or DOB is invalid");
+                self.setState({error: "Username does not exist"});
+                setTimeout(function() { self.setState({error: ""}); }, 3000);
             }
         }).catch(function(error) {
             console.error(error);
         });
+    }
+
+    onChangeHandler(event, newValue){
+        this.setState({[event.target.id]: newValue});
     }
 
     render() {
@@ -48,18 +59,21 @@ class LoginComponent extends Component {
                             <TextField
                                 hintText="Enter your Username"
                                 floatingLabelText="Username"
-                                onChange = {(event,newValue) => this.setState({username: newValue})}
+                                id="username"
+                                onChange = {(event,newValue) => this.onChangeHandler(event,newValue)}
                             />
                             <br />
                             <TextField
                                 hintText="Enter your DOB"
                                 floatingLabelText="Date of Birth"
-                                onChange = {(event,newValue) => this.setState({dob: newValue})}
+                                id="dob"
+                                onChange = {(event,newValue) => this.onChangeHandler(event, newValue)}
                             />
                             <br /><br />
                             <RaisedButton label="Login" primary={true}
                                 onClick={() => this.login()}/>
                             <br />
+                            {this.state.error}
                         </div>
                     </div>
                 </MuiThemeProvider>
@@ -69,7 +83,6 @@ class LoginComponent extends Component {
 }
 
 LoginComponent.propTypes = {
-    addUser: PropTypes.func,
     history: PropTypes.object.isRequired,
 };
 

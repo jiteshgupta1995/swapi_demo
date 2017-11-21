@@ -1,121 +1,90 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from "prop-types";
-import RaisedButton from "material-ui/RaisedButton";
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import axios from "axios";
+import { apiCall } from "../../helper";
+import PresentationalComponent from "./presentationalComponent";
 
+var timer = null;
 class HomeComponent extends Component {
 
     constructor(props) {
         super(props);
+        this.onChangeHandler = this.onChangeHandler.bind(this);
+        this.getNextPage = this.getNextPage.bind(this);
+        this.signout = this.signout.bind(this);
         this.state = {
-            userLoad: false,
-            userInfo: {},
+            searchItems: [],
         }
     }
 
-    componentDidMount() {
+    signout() {
+        this.props.history.push('/');
+    }
+
+    static sortBody(property) {
+        return function(a, b) {
+            var result = (parseInt(a[property]) < parseInt(b[property])) ? -1 :
+                (parseInt(a[property]) > parseInt(b[property])) ? 1 : 0;
+            return result*-1;
+        };
+    }
+
+    getNextPage(url, data=[]) {
         var self = this;
-        var data = {};
-        var api = [];
-        var apiBaseUrl = "https://swapi.co/api/people/?search=";
-        axios.get(apiBaseUrl + this.props.user).then(function(resp) {
-            data = resp.data.results[0];
-            return Object.keys(data).map(function(item) {
-                if(Array.isArray(data[item])){
-                    return data[item].map((d,i) => {
-                        return api.push(axios.get(data[item][i]).then(function(res) {
-                            data[item][i] = res.data;
-                        }));
-                    });
-                }else if(data[item].indexOf("http") > -1){
-                    return api.push(axios.get(data[item]).then(function(res) {
-                        data[item] = res.data;
-                    }));
+        if (url !== null) {
+            apiCall(url).then(function(d) {
+                var len = d.data.results.length;
+                for (var i = 0; i < len; i++) {
+                    data.push(d.data.results[i]);
                 }
-            });
-        }).then(function() {
-            axios.all(api).then(axios.spread(function () {
+                data.sort(HomeComponent.sortBody("population"));
                 self.setState({
-                    userInfo: data,
-                    userLoad: true,
+                    searchItems: data,
                 });
-            }));
-            
-        }).catch(function(error) {
-            console.error(error);
-        });
-    }
-
-    static getUserFull(data) {
-        if (!Array.isArray(data) && typeof data !== "object") {
-            return data;
-        }else if(!Array.isArray(data) && typeof data === "object"){
-            return (
-                <table className="table table-bordered">
-                    <tbody>
-                        {Object.keys(data).map((key, pos) => (
-                            <tr key={pos}><td>{key}: </td><td>{data[key]}</td></tr>
-                        ))}
-                    </tbody>
-                </table>
-            );
-        }else{
-            return(
-                data.map((item,i) =>{
-                    return (
-                        <table className="table table-bordered" key={i}>
-                            <tbody>
-                                {Object.keys(item).map((key, pos) => (
-                                    <tr key={pos}><td>{key}: </td><td>{item[key]}</td></tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    );
-                })
-            );
+                self.getNextPage(d.data.next, data);
+            });
+        } else {
+            data.sort(HomeComponent.sortBody("population"));
+            self.setState({
+                searchItems: data,
+            });
         }
     }
 
+    onChangeHandler(e) {
+        var self = this;
+        var apiBaseUrl = "https://swapi.co/api/planets/?search=" + e.target.value;
+        if(e.target.value === ""){
+            return;
+        }
+        clearTimeout(timer);
+        timer = setTimeout(function(){
+            self.getNextPage(apiBaseUrl)
+        }, 500);
+    }
 
     render() {
-        let data = <tr></tr>;
-        if (this.state.userLoad) {
-            // this.getUserInfo();
-            data = Object.keys(this.state.userInfo).map((item, i) => (
-                <tr key={i}>
-                    <td>{item}</td>
-                    <td>{HomeComponent.getUserFull(this.state.userInfo[item])}</td>
-                </tr>
-            ));
-        } else {
-            data = <tr><td><div className="loader"></div></td></tr>;
+        var list = <div></div>;
+        const fontSize = 40;
+        if (this.state.searchItems.length) {
+            list = <div className="col-xs-12">
+                {this.state.searchItems.map((item,i) =>{
+                    var size = fontSize - i;
+                    if(size < 10)
+                        size = 10;
+                    return(
+                        <div key={i}>
+                            Planet Name: {item.name},&nbsp;
+                            Population: <span style={{fontSize:size+'px'}}>{item.population}</span>
+                        </div>
+                    );
+                })}
+            </div>;
         }
         return (
             <div className="container">
-                <MuiThemeProvider>
-                    <div className="row">
-                        <div className="row">
-                            <div className="col-xs-offset-4 col-xs-4">
-                                Welcome! {this.props.user}
-                            </div>
-                            <div className="col-xs-4">
-                                <RaisedButton label="Signout" primary={true}
-                                    onClick={() => this.props.history.push('/')}/>
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="table-responsive">
-                                <table className="table table-bordered">
-                                    <tbody>
-                                        {data}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </MuiThemeProvider>
+                <PresentationalComponent signout={this.signout} user={this.props.user} list={list}
+                    onChangeHandler={this.onChangeHandler} />
             </div>
         );
     }
@@ -130,6 +99,10 @@ function mapStateToProps(state) {
 HomeComponent.propTypes = {
     user: PropTypes.string.isRequired,
     history: PropTypes.object.isRequired,
+};
+
+HomeComponent.defaultProps = {
+    user: "Logged in user",
 };
 
 export default connect(mapStateToProps, null)(HomeComponent);
