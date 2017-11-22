@@ -8,6 +8,14 @@ import PresentationalComponent from "./presentationalComponent";
 var timer = null;
 class HomeComponent extends Component {
 
+    static sortBody(property) {
+        return function(a, b) {
+            var result = (parseInt(a[property]) < parseInt(b[property])) ? -1 :
+                (parseInt(a[property]) > parseInt(b[property])) ? 1 : 0;
+            return result * -1;
+        };
+    }
+    
     constructor(props) {
         super(props);
         this.signout = this.signout.bind(this);
@@ -20,14 +28,6 @@ class HomeComponent extends Component {
 
     signout() {
         this.props.history.push('/');
-    }
-
-    static sortBody(property) {
-        return function(a, b) {
-            var result = (parseInt(a[property]) < parseInt(b[property])) ? -1 :
-                (parseInt(a[property]) > parseInt(b[property])) ? 1 : 0;
-            return result * -1;
-        };
     }
 
     getResult(url, keyword) {

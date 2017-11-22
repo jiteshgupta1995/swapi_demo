@@ -4,11 +4,10 @@ function search(state = [], action) {
     switch (action.type) {
     case SET_SEARCH:
         var data = [...state];
-        var i;
         if (data.length === 15) {
             data.splice(14, 1);
         }
-        for (i = 0; i < data.length; i++) {
+        for (var i = 0; i < data.length; i++) {
             if (data[i].keyword === action.keyword) {
                 data.splice(i, 1);
                 break;
