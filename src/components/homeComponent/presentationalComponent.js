@@ -34,14 +34,13 @@ const presentationalComponent = (props) =>{
 
 presentationalComponent.propTypes = {
     user: PropTypes.string.isRequired,
-    list: PropTypes.array.isRequired,
+    list: PropTypes.object.isRequired,
     signout: PropTypes.func.isRequired,
     onChangeHandler: PropTypes.func.isRequired,
 };
 
 presentationalComponent.defaultProps = {
     user: "Logged in user",
-    list: [{name:"Some planet",population: "Some population"}],
 };
 
 export default presentationalComponent;
