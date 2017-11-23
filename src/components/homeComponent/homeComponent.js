@@ -1,15 +1,18 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from "prop-types";
-import { apiCall } from "../../helper";
-import { addSearch } from "../../actions";
-import PresentationalComponent from "./presentationalComponent";
+import { apiCall } from "../../helper/NetworkRequest";
+import addSearch from "../../actions/search";
+import DashboardComponent from "./dashboardComponent";
 
 var timer = null;
 class HomeComponent extends Component {
 
     static sortBody(property) {
         return function(a, b) {
+            if(a[property]=== "unknown"){
+                return 1;
+            }
             var result = (parseInt(a[property]) < parseInt(b[property])) ? -1 :
                 (parseInt(a[property]) > parseInt(b[property])) ? 1 : 0;
             return result * -1;
@@ -20,7 +23,9 @@ class HomeComponent extends Component {
         super(props);
         this.signout = this.signout.bind(this);
         this.getResult = this.getResult.bind(this);
+        this.apiCallback = this.apiCallback.bind(this);
         this.onChangeHandler = this.onChangeHandler.bind(this);
+        this.timeoutCallback = this.timeoutCallback.bind(this);
         this.state = {
             searchItem: [],
         };
@@ -30,19 +35,28 @@ class HomeComponent extends Component {
         this.props.history.push('/');
     }
 
+    apiCallback(resp, keyword){
+        var data = resp.data.results;
+        data.sort(HomeComponent.sortBody("population"));
+        this.setState({ searchItem: data });
+        this.props.addSearch(keyword, data);
+        return;
+    }
+
     getResult(url, keyword) {
-        var self = this;
-        for (var i = 0; i < this.props.search.length; i++) {
-            if (this.props.search[i].keyword === keyword) {
-                this.setState({ searchItem: this.props.search[i].result });
+        var {search} = this.props;
+        for (var i = 0; i < search.length; i++) {
+            if (search[i].keyword === keyword) {
+                this.setState({ searchItem: search[i].result });
             }
         }
-        apiCall(url).then(function(d) {
-            var data = d.data.results;
-            data.sort(HomeComponent.sortBody("population"));
-            self.setState({ searchItem: data });
-            self.props.addSearch(keyword, data);
-        });
+
+        apiCall(url).then((resp)=> this.apiCallback(resp, keyword));
+    }
+
+    timeoutCallback(apiBaseUrl, value){
+        this.getResult(apiBaseUrl, value);
+        return;
     }
 
     onChangeHandler(e) {
@@ -52,26 +66,21 @@ class HomeComponent extends Component {
             return;
         }
         e.persist();
-        var self = this;
         clearTimeout(timer);
-        timer = setTimeout(function() {
-            self.getResult(apiBaseUrl, e.target.value);
-        }, 500);
+        timer = setTimeout(this.timeoutCallback(apiBaseUrl, e.target.value), 500);
     }
 
     render() {
         var list = <div></div>;
-        const fontSize = 40;
+        const fontSize = 30;
         if (this.state.searchItem.length) {
             list = <div className="col-xs-12">
                 {this.state.searchItem.map((item,i) =>{
                     var size = fontSize - i;
-                    if(size < 10)
-                        size = 10;
                     return(
-                        <div key={i}>
-                            Planet Name: {item.name},&nbsp;
-                            Population: <span style={{fontSize:size+'px'}}>{item.population}</span>
+                        <div className="row" key={i}>
+                            <div className="col-xs-3" style={{fontSize:size+'px'}}>{item.name}</div>
+                            <div className="col-xs-3" style={{fontSize:size+'px'}}>{item.population}</div>
                         </div>
                     );
                 })}
@@ -81,7 +90,7 @@ class HomeComponent extends Component {
         }
         return (
             <div className="container">
-                <PresentationalComponent signout={this.signout} user={this.props.user} list={list}
+                <DashboardComponent signout={this.signout} user={this.props.user} list={list}
                     onChangeHandler={this.onChangeHandler} />
             </div>
         );
@@ -99,6 +108,7 @@ HomeComponent.propTypes = {
     user: PropTypes.string.isRequired,
     search: PropTypes.array.isRequired,
     history: PropTypes.object.isRequired,
+    addSearch: PropTypes.func,
 };
 
 HomeComponent.defaultProps = {

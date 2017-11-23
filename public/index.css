@@ -54,3 +54,6 @@ td:first-child{
   from{ bottom:-100px; opacity:0 } 
   to{ bottom:0; opacity:1 }
 }
+.float-right{
+  float: right;
+}
