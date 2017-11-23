@@ -3,7 +3,7 @@ import RaisedButton from "material-ui/RaisedButton";
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import PropTypes from "prop-types";
 
-const presentationalComponent = (props) =>{
+const dashboardComponent = (props) =>{
     return(
         <MuiThemeProvider>
             <div className="row">
@@ -32,15 +32,15 @@ const presentationalComponent = (props) =>{
     );
 };
 
-presentationalComponent.propTypes = {
+dashboardComponent.propTypes = {
     user: PropTypes.string.isRequired,
     list: PropTypes.object.isRequired,
     signout: PropTypes.func.isRequired,
     onChangeHandler: PropTypes.func.isRequired,
 };
 
-presentationalComponent.defaultProps = {
+dashboardComponent.defaultProps = {
     user: "Logged in user",
 };
 
-export default presentationalComponent;
+export default dashboardComponent;
