@@ -50,9 +50,9 @@ class LoginComponent extends Component {
     }
 
     login() {
-        // var self = this;
         var apiBaseUrl = "https://swapi.co/api/people/?search=";
-        apiCall(apiBaseUrl + this.state.username).then((resp) => this.apiCallback(resp))
+        apiCall(apiBaseUrl + this.state.username)
+            .then((resp) => this.apiCallback(resp))
             .catch(function(error) {
                 console.error(error);
             });
@@ -82,7 +82,9 @@ class LoginComponent extends Component {
                                 onChange = {(event,newValue) => this.onChangeHandler(event, newValue)}
                             />
                             <br /><br />
-                            <RaisedButton label="Login" primary={true}
+                            <RaisedButton
+                                label="Login"
+                                primary={true}
                                 id="loginButton"
                                 onClick={() => this.login()}/>
                             <br />

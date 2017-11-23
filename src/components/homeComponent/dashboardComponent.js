@@ -12,14 +12,21 @@ const dashboardComponent = ({user, signout, onChangeHandler, list}) =>{
                         <h1>Welcome! {user}</h1>
                     </div>
                     <div className="col-xs-4">
-                        <RaisedButton className="float-right" label="Signout" primary={true}
-                            onClick={signout}/>
+                        <RaisedButton
+                            className="float-right"
+                            label="Signout"
+                            primary={true}
+                            onClick={signout}
+                        />
                     </div>
                 </div>
                 <div className="row">
                     <div className="form-group">
                         <label>Enter text</label>
-                        <input type="text" className="form-control" id="userInput"
+                        <input
+                            type="text"
+                            className="form-control"
+                            id="userInput"
                             onChange={onChangeHandler}
                         />
                     </div>

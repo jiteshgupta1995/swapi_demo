@@ -79,8 +79,12 @@ class HomeComponent extends Component {
                     var size = fontSize - i;
                     return(
                         <div className="row" key={i}>
-                            <div className="col-xs-3" style={{fontSize:size+'px'}}>{item.name}</div>
-                            <div className="col-xs-3" style={{fontSize:size+'px'}}>{item.population}</div>
+                            <div className="col-xs-3" style={{fontSize:size+'px'}}>
+                                {item.name}
+                            </div>
+                            <div className="col-xs-3" style={{fontSize:size+'px'}}>
+                                {item.population}
+                            </div>
                         </div>
                     );
                 })}
@@ -90,8 +94,12 @@ class HomeComponent extends Component {
         }
         return (
             <div className="container">
-                <DashboardComponent signout={this.signout} user={this.props.user} list={list}
-                    onChangeHandler={this.onChangeHandler} />
+                <DashboardComponent
+                    signout={this.signout}
+                    user={this.props.user}
+                    list={list}
+                    onChangeHandler={this.onChangeHandler}
+                />
             </div>
         );
     }
