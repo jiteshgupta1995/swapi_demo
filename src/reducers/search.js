@@ -7,16 +7,16 @@ function search(state = [], action) {
         for (var i = 0; i < data.length; i++) {
             if (data[i].keyword === action.keyword) {
                 data.splice(i, 1);
-                data.unshift({
-                    keyword: action.keyword,
-                    result: action.result,
-                });
                 break;
             }
         }
         if (data.length === 15) {
             data.splice(14, 1);
         }
+        data.unshift({
+            keyword: action.keyword,
+            result: action.result,
+        });
         return data;
     default:
         return state;

@@ -102,4 +102,8 @@ LoginComponent.propTypes = {
     addUser: PropTypes.func,
 };
 
+LoginComponent.defaultProps = {
+    history: {},
+}
+
 export default connect( null, {addUser})(LoginComponent);

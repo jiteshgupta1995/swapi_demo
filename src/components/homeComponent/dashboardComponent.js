@@ -48,6 +48,7 @@ dashboardComponent.propTypes = {
 
 dashboardComponent.defaultProps = {
     user: "Logged in user",
+    list: {},
 };
 
 export default dashboardComponent;

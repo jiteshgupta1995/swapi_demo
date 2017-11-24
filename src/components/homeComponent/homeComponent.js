@@ -5,7 +5,6 @@ import { apiCall } from "../../helper/NetworkRequest";
 import addSearch from "../../actions/search";
 import DashboardComponent from "./dashboardComponent";
 
-var timer = null;
 class HomeComponent extends Component {
 
     static sortBody(property) {
@@ -28,6 +27,7 @@ class HomeComponent extends Component {
         this.timeoutCallback = this.timeoutCallback.bind(this);
         this.state = {
             searchItem: [],
+            timer: null,
         };
     }
 
@@ -62,12 +62,14 @@ class HomeComponent extends Component {
     onChangeHandler(e) {
         var apiBaseUrl = "https://swapi.co/api/planets/?search=" + e.target.value;
         if (e.target.value.length < 2) {
-            clearTimeout(timer);
+            clearTimeout(this.state.timer);
             return;
         }
         e.persist();
-        clearTimeout(timer);
-        timer = setTimeout(this.timeoutCallback(apiBaseUrl, e.target.value), 500);
+        clearTimeout(this.state.timer);
+        this.setState({
+            timer: setTimeout(this.timeoutCallback(apiBaseUrl, e.target.value), 500),
+        });
     }
 
     render() {
@@ -121,6 +123,8 @@ HomeComponent.propTypes = {
 
 HomeComponent.defaultProps = {
     user: "Logged in user",
+    search: [],
+    history: {},
 };
 
 export default connect(mapStateToProps, { addSearch })(HomeComponent);
