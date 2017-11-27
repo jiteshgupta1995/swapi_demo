@@ -4,14 +4,24 @@ import { configure, shallow } from 'enzyme';
 import configureStore from 'redux-mock-store';
 import Adapter from 'enzyme-adapter-react-16';
 import MockAdapter from 'axios-mock-adapter';
+import { createMemoryHistory } from 'history';
 import HomeComponent from '../src/components/homeComponent/homeComponent';
 
 const mockStore = configureStore();
 configure({ adapter: new Adapter() });
-
 var mock = new MockAdapter(axios);
 
 describe('HomeComponent', () => {
+
+    it('has input and signout button', () => {
+        const component = shallow(
+            <HomeComponent store={mockStore()}/>
+        );
+        const userInput = component.find('#userInput').length;
+        expect(userInput).toBe(0);
+        const signoutBtn = component.find('#signoutBtn').length;
+        expect(signoutBtn).toBe(0);
+    });
 
     it('is calling API Success, sorts data', () => {
         const component = shallow(<HomeComponent store={mockStore()} />).dive();
@@ -35,17 +45,6 @@ describe('HomeComponent', () => {
         expect(component.instance().state.searchItem).toEqual(sorted);
     });
 
-    test('API is working', () => {
-        const component = shallow(<HomeComponent store={mockStore()} />).dive();
-
-        mock.onGet('https://swapi.co/api/planets/?search=aa').reply(200, {
-            results: [{name: "Pluto", population: "500"}],
-        });
-        component.instance().getResult("https://swapi.co/api/planets/?search=aa", "aa");
-        expect(component).toMatchSnapshot();
-    });
-
-
     it('is searching for min 2 characters', () => {
         const home = shallow(<HomeComponent store={mockStore()} />).dive().instance();
         var event = {
@@ -62,5 +61,21 @@ describe('HomeComponent', () => {
         event.target.value = "aa";
         home.onChangeHandler(event,'username');
         expect(home.state.timer).not.toEqual(null);
+    });
+
+    test('API is working', () => {
+        const component = shallow(<HomeComponent store={mockStore()} />).dive();
+        mock.onGet('https://swapi.co/api/planets/?search=aa').reply(200, {
+            results: [{name: "Pluto", population: "500"}],
+        });
+        component.instance().getResult("https://swapi.co/api/planets/?search=aa", "aa");
+        expect(component).toMatchSnapshot();
+    });
+
+    test('Signout success', () => {
+        const history = createMemoryHistory('/home');
+        const component = shallow(<HomeComponent store={mockStore()} history={history} />).dive();
+        component.instance().signout();
+        expect(history.location.pathname).toEqual("/");
     });
 });

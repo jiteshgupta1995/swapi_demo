@@ -15,6 +15,7 @@ const dashboardComponent = ({user, signout, onChangeHandler, list}) =>{
                         <RaisedButton
                             className="float-right"
                             label="Signout"
+                            id="signoutBtn"
                             primary={true}
                             onClick={signout}
                         />

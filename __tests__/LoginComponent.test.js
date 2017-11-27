@@ -4,13 +4,12 @@ import { configure, shallow } from 'enzyme';
 import configureStore from 'redux-mock-store';
 import Adapter from 'enzyme-adapter-react-16';
 import MockAdapter from 'axios-mock-adapter';
+import { createMemoryHistory } from 'history';
 import LoginComponent from '../src/components/loginComponent/loginComponent';
 
 const mockStore = configureStore();
 configure({ adapter: new Adapter() });
-
 var mock = new MockAdapter(axios);
-
 
 describe('LoginComponent', () => {
 
@@ -33,7 +32,7 @@ describe('LoginComponent', () => {
 
     it('has input and button', () => {
         const component = shallow(
-            <LoginComponent store={mockStore({ history: {push: []} })}/>
+            <LoginComponent store={mockStore()}/>
         );
         const usernameInput = component.find('#username').length;
         expect(usernameInput).toBe(0);
@@ -49,7 +48,6 @@ describe('LoginComponent', () => {
             username: "FOO",
             dob: "BAZ",
         });
-
         // arguments for reply are (status, data, headers)
         mock.onGet('https://swapi.co/api/people/?search=FOO').reply(200, {
             results: [{name: "C-3PO", birth_year: "112BBY"}],
@@ -86,5 +84,21 @@ describe('LoginComponent', () => {
         };
         component.instance().apiSuccessCallback(resp);
         expect(component.instance().state.error).toEqual("DOB does not match");
+    });
+
+    test('Login success', () => {
+        const history = createMemoryHistory('/');
+        const component = shallow(<LoginComponent store={mockStore()} history={history} />).dive();
+        component.setState({
+            username: "C-3PO",
+            dob: "112BBY",
+        });
+        var resp = {
+            data: {
+                results: [{name: "C-3PO", birth_year: "112BBY"}],
+            },
+        };
+        component.instance().apiSuccessCallback(resp);
+        expect(history.location.pathname).toEqual("/home");
     });
 });

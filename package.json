@@ -9,6 +9,7 @@
     "eslint-config-defaults": "^9.0.0",
     "eslint-plugin-flowtype": "^2.39.1",
     "eslint-plugin-import": "^2.8.0",
+    "history": "^4.7.2",
     "material-ui": "^0.19.4",
     "minimatch": "^3.0.4",
     "prop-types": "^15.6.0",
@@ -28,7 +29,9 @@
     "eject": "react-scripts eject"
   },
   "jest": {
-    "setupFiles": ["./shim.js"]
+    "setupFiles": [
+      "./shim.js"
+    ]
   },
   "devDependencies": {
     "axios-mock-adapter": "^1.10.0",
