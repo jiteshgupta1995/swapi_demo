@@ -17,14 +17,18 @@ class HomeComponent extends Component {
             return result * -1;
         };
     }
+
+    static apiFailureCallback(error){
+        console.error(error);
+    }
     
     constructor(props) {
         super(props);
         this.signout = this.signout.bind(this);
         this.getResult = this.getResult.bind(this);
-        this.apiCallback = this.apiCallback.bind(this);
         this.onChangeHandler = this.onChangeHandler.bind(this);
         this.timeoutCallback = this.timeoutCallback.bind(this);
+        this.apiSuccessCallback = this.apiSuccessCallback.bind(this);
         this.state = {
             searchItem: [],
             timer: null,
@@ -35,7 +39,7 @@ class HomeComponent extends Component {
         this.props.history.push('/');
     }
 
-    apiCallback(resp, keyword){
+    apiSuccessCallback(resp, keyword){
         var data = resp.data.results;
         data.sort(HomeComponent.sortBody("population"));
         this.setState({ searchItem: data });
@@ -51,7 +55,9 @@ class HomeComponent extends Component {
             }
         }
 
-        apiCall(url).then((resp)=> this.apiCallback(resp, keyword));
+        apiCall(url)
+            .then((resp)=> this.apiSuccessCallback(resp, keyword))
+            .catch((error) => HomeComponent.apiFailureCallback(error));
     }
 
     timeoutCallback(apiBaseUrl, value){
@@ -65,7 +71,6 @@ class HomeComponent extends Component {
             clearTimeout(this.state.timer);
             return;
         }
-        e.persist();
         clearTimeout(this.state.timer);
         this.setState({
             timer: setTimeout(this.timeoutCallback(apiBaseUrl, e.target.value), 500),

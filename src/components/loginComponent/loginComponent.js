@@ -14,7 +14,8 @@ class LoginComponent extends Component {
         this.login = this.login.bind(this);
         this.onChangeHandler = this.onChangeHandler.bind(this);
         this.timeoutCallback = this.timeoutCallback.bind(this);
-        this.apiCallback = this.apiCallback.bind(this);
+        this.apiSuccessCallback = this.apiSuccessCallback.bind(this);
+        this.apiFailureCallback = this.apiFailureCallback.bind(this);
         this.state = {
             username: '',
             dob: '',
@@ -27,35 +28,37 @@ class LoginComponent extends Component {
         return;
     }
 
-    apiCallback(resp){
+    apiSuccessCallback(resp){
         var len = resp.data.results.length;
+        let errorMsg = "Username does not exist";
         for (var i = 0; i < len; i++) {
             if (resp.data.results[i].name === this.state.username &&
                 resp.data.results[i].birth_year === this.state.dob) {
+                errorMsg = "";
                 this.props.addUser(this.state.username);
                 this.props.history.push('/home');
                 break;
             }else if(resp.data.results[i].name === this.state.username &&
                 resp.data.results[i].birth_year !== this.state.dob){
-                this.setState({error: "DOB does not match"});
-                setTimeout(this.timeoutCallback(), 3000);
+                errorMsg = "DOB does not match";
                 break;
             }
         }
-        if (i === len) {
-            this.setState({error: "Username does not exist"});
-            setTimeout(this.timeoutCallback(), 3000);
-        }
-        return;
+        this.setState({error: errorMsg});
+        setTimeout(this.timeoutCallback(), 3000);
+    }
+
+    apiFailureCallback(error){
+        this.setState({error: "Error"});
+        setTimeout(this.timeoutCallback(), 3000);
+        console.error(error);
     }
 
     login() {
         var apiBaseUrl = "https://swapi.co/api/people/?search=";
         apiCall(apiBaseUrl + this.state.username)
-            .then((resp) => this.apiCallback(resp))
-            .catch(function(error) {
-                console.error(error);
-            });
+            .then((resp) => this.apiSuccessCallback(resp))
+            .catch((error) => this.apiFailureCallback(error));
     }
 
     onChangeHandler(event, newValue){

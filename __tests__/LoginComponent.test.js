@@ -1,24 +1,20 @@
 import React from 'react';
-import LoginComponent from '../src/components/loginComponent/loginComponent';
+import axios from 'axios';
 import { configure, shallow } from 'enzyme';
 import configureStore from 'redux-mock-store';
 import Adapter from 'enzyme-adapter-react-16';
-import moxios from 'moxios';
+import MockAdapter from 'axios-mock-adapter';
+import LoginComponent from '../src/components/loginComponent/loginComponent';
 
 const mockStore = configureStore();
 configure({ adapter: new Adapter() });
 
+var mock = new MockAdapter(axios);
+
 describe('LoginComponent', () => {
-    beforeEach(function () {
-        // import and pass your custom axios instance to this method
-        moxios.install()
-    })
-    afterEach(function () {
-        // import and pass your custom axios instance to this method
-        moxios.uninstall()
-    })
-    it('should change the username and dob value', () => {
-        const login = shallow(<LoginComponent store={mockStore({ history: {push: []} })}/>).dive().instance();
+
+    it('is changing the username, dob and error value', () => {
+        const login = shallow(<LoginComponent store={mockStore()} />).dive().instance();
         var event = {
             target:{
                 id: "dob",
@@ -29,6 +25,9 @@ describe('LoginComponent', () => {
         event.target.id = "username";
         login.onChangeHandler(event,'username');
         expect(login.state.username).toEqual('username');
+        event.target.id = "error";
+        login.onChangeHandler(event,'error');
+        expect(login.state.error).toEqual('error');
     });
 
     it('has input and button', () => {
@@ -43,24 +42,48 @@ describe('LoginComponent', () => {
         expect(loginButton).toBe(0);
     });
 
-    it('Login works', () => {
-        const login = shallow(<LoginComponent store={mockStore({ history: {push: []} })}/>).dive();
-        login.setState({
-            username: 'FOO',
-            dob: 'BAZ',
+    test('Login api works', () => {
+        const component = shallow(<LoginComponent store={mockStore()} />).dive();
+        component.setState({
+            username: "FOO",
+            dob: "BAZ",
         });
-        login.instance().login();
-        moxios.wait(function () {
-            let request = moxios.requests.mostRecent()
-            request.respondWith({
-                status: 200,
-                data: {
-                    results:[],
-                },
-            }).then(function () {
-                expect(login.instance().state.error).toEqual("Username does not exist");
-            })
+
+        // arguments for reply are (status, data, headers)
+        mock.onGet('https://swapi.co/api/people/?search=FOO').reply(200, {
+            results: [{name: "C-3PO", birth_year: "112BBY"}],
         });
-        
+        component.instance().login();
+        // api is called code need to be added here
+    });
+
+    test('Login failed (invalid username)', () => {
+        const component = shallow(<LoginComponent store={mockStore()} />).dive();
+        component.setState({
+            username: "3PO",
+            dob: "BAZ",
+        });
+        var resp = {
+            data: {
+                results: [{name: "C-3PO", birth_year: "112BBY"}],
+            },
+        };
+        component.instance().apiSuccessCallback(resp);
+        expect(component.instance().state.error).toEqual("Username does not exist");
+    });
+
+    test('Login failed (invalid password)', () => {
+        const component = shallow(<LoginComponent store={mockStore()} />).dive();
+        component.setState({
+            username: "C-3PO",
+            dob: "112B",
+        });
+        var resp = {
+            data: {
+                results: [{name: "C-3PO", birth_year: "112BBY"}],
+            },
+        };
+        component.instance().apiSuccessCallback(resp);
+        expect(component.instance().state.error).toEqual("DOB does not match");
     });
 });
