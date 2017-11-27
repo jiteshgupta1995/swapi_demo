@@ -42,7 +42,7 @@ describe('HomeComponent', () => {
             results: [{name: "Pluto", population: "500"}],
         });
         component.instance().getResult("https://swapi.co/api/planets/?search=aa", "aa");
-        // api is called code need to be added here
+        expect(component).toMatchSnapshot();
     });
 
 

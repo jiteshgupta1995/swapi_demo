@@ -45,12 +45,12 @@ class LoginComponent extends Component {
             }
         }
         this.setState({error: errorMsg});
-        setTimeout(this.timeoutCallback(), 3000);
+        // setTimeout(this.timeoutCallback(), 3000);
     }
 
     apiFailureCallback(error){
         this.setState({error: "Error"});
-        setTimeout(this.timeoutCallback(), 3000);
+        // setTimeout(this.timeoutCallback(), 3000);
         console.error(error);
     }
 

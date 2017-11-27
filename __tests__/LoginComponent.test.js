@@ -11,6 +11,7 @@ configure({ adapter: new Adapter() });
 
 var mock = new MockAdapter(axios);
 
+
 describe('LoginComponent', () => {
 
     it('is changing the username, dob and error value', () => {
@@ -54,7 +55,7 @@ describe('LoginComponent', () => {
             results: [{name: "C-3PO", birth_year: "112BBY"}],
         });
         component.instance().login();
-        // api is called code need to be added here
+        expect(component).toMatchSnapshot();
     });
 
     test('Login failed (invalid username)', () => {
