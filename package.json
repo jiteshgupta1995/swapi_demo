@@ -31,7 +31,9 @@
   "jest": {
     "setupFiles": [
       "./shim.js"
-    ]
+    ],
+    "collectCoverage": true,
+    "coveragePathIgnorePatterns": ["./shim.js", "./node_modules/"]
   },
   "devDependencies": {
     "axios-mock-adapter": "^1.10.0",

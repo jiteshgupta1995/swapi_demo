@@ -13,7 +13,6 @@ class LoginComponent extends Component {
         super(props);
         this.login = this.login.bind(this);
         this.onChangeHandler = this.onChangeHandler.bind(this);
-        this.timeoutCallback = this.timeoutCallback.bind(this);
         this.apiSuccessCallback = this.apiSuccessCallback.bind(this);
         this.apiFailureCallback = this.apiFailureCallback.bind(this);
         this.state = {
@@ -21,11 +20,6 @@ class LoginComponent extends Component {
             dob: '',
             error: '',
         };
-    }
-
-    timeoutCallback(){
-        this.setState({error: ""});
-        return;
     }
 
     apiSuccessCallback(resp){
@@ -45,16 +39,18 @@ class LoginComponent extends Component {
             }
         }
         this.setState({error: errorMsg});
-        // setTimeout(this.timeoutCallback(), 3000);
     }
 
     apiFailureCallback(error){
         this.setState({error: "Error"});
-        // setTimeout(this.timeoutCallback(), 3000);
-        console.error(error);
+        console.error(error.response.status);
     }
 
     login() {
+        if(this.state.username === "" || this.state.dob === ""){
+            this.setState({error: "Missing fields"});
+            return;
+        }
         var apiBaseUrl = "https://swapi.co/api/people/?search=";
         apiCall(apiBaseUrl + this.state.username)
             .then((resp) => this.apiSuccessCallback(resp))

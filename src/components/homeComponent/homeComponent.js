@@ -19,7 +19,7 @@ class HomeComponent extends Component {
     }
 
     static apiFailureCallback(error){
-        console.error(error);
+        console.error(error.response.status);
     }
     
     constructor(props) {
@@ -84,13 +84,17 @@ class HomeComponent extends Component {
             list = <div className="col-xs-12">
                 {this.state.searchItem.map((item,i) =>{
                     var size = fontSize - i;
+                    var pop = item.population;
+                    if(item.population === "unknown"){
+                        pop = "0";
+                    }
                     return(
                         <div className="row" key={i}>
                             <div className="col-xs-3" style={{fontSize:size+'px'}}>
                                 {item.name}
                             </div>
                             <div className="col-xs-3" style={{fontSize:size+'px'}}>
-                                {item.population}
+                                {pop}
                             </div>
                         </div>
                     );
