@@ -1,29 +1,29 @@
 import React from "react";
-import RaisedButton from "material-ui/RaisedButton";
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import PropTypes from "prop-types";
 
-const dashboardComponent = ({user, signout, onChangeHandler, list}) =>{
+const dashboardComponent = ({user, signout, onChangeHandler, list, loader}) =>{
     return(
-        <MuiThemeProvider>
+        <div className="row">
             <div className="row">
-                <div className="row">
-                    <div className="col-xs-offset-4 col-xs-4">
+                <div className="col-xs-8">
+                    <div className="yellow">
                         <h1>Welcome! {user}</h1>
                     </div>
-                    <div className="col-xs-4">
-                        <RaisedButton
-                            className="float-right"
-                            label="Signout"
-                            id="signoutBtn"
-                            primary={true}
-                            onClick={signout}
-                        />
-                    </div>
                 </div>
-                <div className="row">
+                <div className="col-xs-4">
+                    <button
+                        className="btn btn-primary float-right margin-top25"
+                        id="signoutBtn"
+                        onClick={signout}
+                    >
+                    Signout
+                    </button>
+                </div>
+            </div>
+            <div className="row">
+                <div className="col-xs-12">
                     <div className="form-group">
-                        <label>Enter text</label>
+                        <label className="yellow">Search planet</label>
                         <input
                             type="text"
                             className="form-control"
@@ -32,17 +32,21 @@ const dashboardComponent = ({user, signout, onChangeHandler, list}) =>{
                         />
                     </div>
                 </div>
-                <div className="row">
+            </div>
+            <div className="row">
+                <div className="col-xs-12">
                     {list}
+                    {loader}
                 </div>
             </div>
-        </MuiThemeProvider>
+        </div>
     );
 };
 
 dashboardComponent.propTypes = {
     user: PropTypes.string.isRequired,
     list: PropTypes.object.isRequired,
+    loader: PropTypes.object.isRequired,
     signout: PropTypes.func.isRequired,
     onChangeHandler: PropTypes.func.isRequired,
 };

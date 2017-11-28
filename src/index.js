@@ -9,7 +9,7 @@ import { Provider } from 'react-redux';
 import {Switch} from "react-router";
 
 const store = createStore(rootReducer);
-store.subscribe(() => console.warn('store', store.getState()));
+// store.subscribe(() => console.warn('store', store.getState()));
 
 ReactDOM.render(
     <Provider store={store}>

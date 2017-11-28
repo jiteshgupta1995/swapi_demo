@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import RaisedButton from "material-ui/RaisedButton";
-import TextField from "material-ui/TextField";
-import {apiCall} from "../../helper/NetworkRequest";
+import { apiCall } from "../../helper/NetworkRequest";
 import { connect } from 'react-redux';
 import addUser from "../../actions/user";
 import PropTypes from "prop-types";
@@ -19,78 +16,94 @@ class LoginComponent extends Component {
             username: '',
             dob: '',
             error: '',
+            loader: false,
         };
     }
 
-    apiSuccessCallback(resp){
-        var len = resp.data.results.length;
-        let errorMsg = "Username does not exist";
-        for (var i = 0; i < len; i++) {
-            if (resp.data.results[i].name === this.state.username &&
-                resp.data.results[i].birth_year === this.state.dob) {
-                errorMsg = "";
-                this.props.addUser(this.state.username);
-                this.props.history.push('/home');
-                break;
-            }else if(resp.data.results[i].name === this.state.username &&
-                resp.data.results[i].birth_year !== this.state.dob){
-                errorMsg = "DOB does not match";
-                break;
-            }
-        }
-        this.setState({error: errorMsg});
-    }
-
-    apiFailureCallback(error){
-        this.setState({error: "Error"});
-        console.error(error.response.status);
-    }
-
-    login() {
-        if(this.state.username === "" || this.state.dob === ""){
-            this.setState({error: "Missing fields"});
-            return;
-        }
+    login(event) {
+        event.preventDefault();
+        this.setState({loader: true});
         var apiBaseUrl = "https://swapi.co/api/people/?search=";
         apiCall(apiBaseUrl + this.state.username)
             .then((resp) => this.apiSuccessCallback(resp))
             .catch((error) => this.apiFailureCallback(error));
     }
 
-    onChangeHandler(event, newValue){
-        this.setState({[event.target.id]: newValue});
+    apiSuccessCallback(resp) {
+        var len = resp.data.results.length;
+        let errorMsg = "Username does not exist";
+        for (var i = 0; i < len; i++) {
+            if (resp.data.results[i].name === this.state.username) {
+                if (resp.data.results[i].birth_year === this.state.dob) {
+                    errorMsg = "";
+                    this.props.addUser(this.state.username);
+                    this.props.history.push('/home');
+                    return;
+                } else {
+                    errorMsg = "DOB does not match";
+                }
+                break;
+            }
+        }
+        this.setState({ error: errorMsg, loader: false });
+    }
+
+    apiFailureCallback(error) {
+        this.setState({ error: "Error", loader: false });
+        console.error(error.response.status);
+    }
+
+    onChangeHandler(event) {
+        this.setState({[event.target.id]: event.target.value });
     }
 
     render() {
+        let loader = <div></div>;
+        if(this.state.loader){
+            loader = <div className="loader"></div>
+        }
         return (
             <div className="container">
-                <MuiThemeProvider>
-                    <div className="row">
-                        <div className="col-xs-offset-4 col-xs-4">
-                            <TextField
-                                hintText="Enter your Username"
-                                floatingLabelText="Username"
-                                id="username"
-                                onChange = {(event,newValue) => this.onChangeHandler(event,newValue)}
-                            />
-                            <br />
-                            <TextField
-                                hintText="Enter your DOB"
-                                floatingLabelText="Date of Birth"
-                                id="dob"
-                                onChange = {(event,newValue) => this.onChangeHandler(event, newValue)}
-                            />
-                            <br /><br />
-                            <RaisedButton
-                                label="Login"
-                                primary={true}
+                <div className="row center yellow">
+                    <h1 className="jumbo">SWAPI</h1>
+                    <p className="lead">The Star Wars API</p>
+                </div>
+                <div className="row">
+                    <div className="col-xs-offset-4 col-xs-4 form-box">
+                        <form onSubmit={this.login}>
+                            <div className="form-group">
+                                <label>Username</label>
+                                <input
+                                    id="username"
+                                    className="form-control"
+                                    placeholder="Enter your Username"
+                                    onChange = {this.onChangeHandler}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Date of Birth</label>
+                                <input
+                                    id="dob"
+                                    className="form-control"
+                                    placeholder="Enter your DOB"
+                                    onChange = {this.onChangeHandler}
+                                    required
+                                />
+                            </div>
+                            <button
                                 id="loginButton"
-                                onClick={() => this.login()}/>
+                                className="btn btn-primary btn-block"
+                                type="submit"
+                            >
+                            LOGIN
+                            </button>
                             <br />
-                            {this.state.error}
-                        </div>
+                            <span className="danger">{this.state.error}</span>
+                        </form>
+                        {loader}
                     </div>
-                </MuiThemeProvider>
+                </div>
             </div>
         );
     }
@@ -105,4 +118,4 @@ LoginComponent.defaultProps = {
     history: {},
 }
 
-export default connect( null, {addUser})(LoginComponent);
+export default connect(null, { addUser })(LoginComponent);

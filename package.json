@@ -10,10 +10,10 @@
     "eslint-plugin-flowtype": "^2.39.1",
     "eslint-plugin-import": "^2.8.0",
     "history": "^4.7.2",
-    "material-ui": "^0.19.4",
     "minimatch": "^3.0.4",
     "prop-types": "^15.6.0",
     "react": "^16.1.1",
+    "react-cookies": "^0.1.0",
     "react-dom": "^16.1.1",
     "react-redux": "^5.0.6",
     "react-router": "^4.0.0",
@@ -33,7 +33,10 @@
       "./shim.js"
     ],
     "collectCoverage": true,
-    "coveragePathIgnorePatterns": ["./shim.js", "./node_modules/"]
+    "coveragePathIgnorePatterns": [
+      "./shim.js",
+      "./node_modules/"
+    ]
   },
   "devDependencies": {
     "axios-mock-adapter": "^1.10.0",

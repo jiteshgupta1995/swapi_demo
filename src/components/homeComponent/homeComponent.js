@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from "prop-types";
+import cookie from 'react-cookies';
 import { apiCall } from "../../helper/NetworkRequest";
 import addSearch from "../../actions/search";
 import DashboardComponent from "./dashboardComponent";
@@ -9,7 +10,7 @@ class HomeComponent extends Component {
 
     static sortBody(property) {
         return function(a, b) {
-            if(a[property]=== "unknown"){
+            if (a[property] === "unknown") {
                 return 1;
             }
             var result = (parseInt(a[property]) < parseInt(b[property])) ? -1 :
@@ -18,10 +19,6 @@ class HomeComponent extends Component {
         };
     }
 
-    static apiFailureCallback(error){
-        console.error(error.response.status);
-    }
-    
     constructor(props) {
         super(props);
         this.signout = this.signout.bind(this);
@@ -29,46 +26,68 @@ class HomeComponent extends Component {
         this.onChangeHandler = this.onChangeHandler.bind(this);
         this.timeoutCallback = this.timeoutCallback.bind(this);
         this.apiSuccessCallback = this.apiSuccessCallback.bind(this);
+        this.apiFailureCallback = this.apiFailureCallback.bind(this);
         this.state = {
+            user: "",
             searchItem: [],
             timer: null,
+            loader: false,
         };
+    }
+
+    componentDidMount(){
+        if(this.props.user !== ""){
+            cookie.save('name', this.props.user, { path: '/home' });
+            this.setState({user: this.props.user});
+        }else{
+            this.setState({user: cookie.load('name')});
+        }
     }
 
     signout() {
         this.props.history.push('/');
     }
 
-    apiSuccessCallback(resp, keyword){
-        var data = resp.data.results;
-        data.sort(HomeComponent.sortBody("population"));
-        this.setState({ searchItem: data });
-        this.props.addSearch(keyword, data);
-        return;
-    }
-
     getResult(url, keyword) {
-        var {search} = this.props;
+        var { search } = this.props;
+        this.setState({loader: true});
         for (var i = 0; i < search.length; i++) {
             if (search[i].keyword === keyword) {
-                this.setState({ searchItem: search[i].result });
+                this.setState({
+                    searchItem: search[i].result,
+                    loader: false,
+                });
             }
         }
 
         apiCall(url)
-            .then((resp)=> this.apiSuccessCallback(resp, keyword))
-            .catch((error) => HomeComponent.apiFailureCallback(error));
+            .then((resp) => this.apiSuccessCallback(resp, keyword))
+            .catch((error) => this.apiFailureCallback(error));
     }
 
-    timeoutCallback(apiBaseUrl, value){
-        this.getResult(apiBaseUrl, value);
-        return;
+    apiSuccessCallback(resp, keyword) {
+        var data = resp.data.results;
+        data.sort(HomeComponent.sortBody("population"));
+        this.setState({
+            searchItem: data,
+            loader: false,
+        });
+        this.props.addSearch(keyword, data);
+    }
+
+    apiFailureCallback(error) {
+        this.setState({loader: false});
+        console.error(error.response.status);
     }
 
     onChangeHandler(e) {
         var apiBaseUrl = "https://swapi.co/api/planets/?search=" + e.target.value;
         if (e.target.value.length < 2) {
             clearTimeout(this.state.timer);
+            this.setState({
+                searchItem: [],
+                loader: false,
+            });
             return;
         }
         clearTimeout(this.state.timer);
@@ -77,14 +96,19 @@ class HomeComponent extends Component {
         });
     }
 
+    timeoutCallback(apiBaseUrl, value) {
+        this.getResult(apiBaseUrl, value);
+    }
+
     render() {
-        var list = <div></div>;
+        let list = <div></div>;
+        let loader = <div></div>;
         const fontSize = 30;
         if (this.state.searchItem.length) {
-            list = <div className="col-xs-12">
+            list = <div className="response">
                 {this.state.searchItem.map((item,i) =>{
-                    var size = fontSize - i;
-                    var pop = item.population;
+                    let size = fontSize - i;
+                    let pop = item.population;
                     if(item.population === "unknown"){
                         pop = "0";
                     }
@@ -101,14 +125,20 @@ class HomeComponent extends Component {
                 })}
             </div>;
         } else {
-            list = <div>No result found.</div>;
+            list = <div className="response">No result found.</div>;
+        }
+        if(this.state.loader){
+            loader=<div className="loader"></div>;
+        }else{
+            loader=<div></div>;
         }
         return (
             <div className="container">
                 <DashboardComponent
                     signout={this.signout}
-                    user={this.props.user}
+                    user={this.state.user}
                     list={list}
+                    loader={loader}
                     onChangeHandler={this.onChangeHandler}
                 />
             </div>

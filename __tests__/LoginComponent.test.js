@@ -10,38 +10,43 @@ import LoginComponent from '../src/components/loginComponent/loginComponent';
 const mockStore = configureStore();
 configure({ adapter: new Adapter() });
 var mock = new MockAdapter(axios);
-const resp = {
-    data: {
-        results: [{name: "C-3PO", birth_year: "112BBY"}],
-    },
-};
-const state = {
-    username: "FOO",
-    dob: "BAZ",
-};
-let loginComponent = shallow(<LoginComponent store={mockStore()} />).dive();
 
 describe('LoginComponent', () => {
 
+    let loginComponent = shallow(<LoginComponent store={mockStore()} />).dive();
+    const resp = {
+        data: {
+            results: [{ name: "C-3PO", birth_year: "112BBY" }],
+        },
+    };
+    const state = {
+        username: "FOO",
+        dob: "BAZ",
+    };
+    const preventDefault = {
+        preventDefault: function(){
+            return;
+        },
+    };
+
     it('has input and button', () => {
         const component = mount(<LoginComponent store={mockStore()} />);
-        component.find('input#username').simulate('change', { target: {
-            value: 'Username',
-        }});
-        component.find('input#dob').simulate('change', { target: {
-            value: 'Dob',
-        }});
+        component.find('input#username').simulate('change', {
+            target: {
+                value: 'Username',
+            },
+        });
+        component.find('input#dob').simulate('change', {
+            target: {
+                value: 'Dob',
+            },
+        });
         component.find('button#loginButton').simulate('click');
-    });
-
-    test('Login failed (missing fields)', () => {
-        loginComponent.instance().login();
-        expect(loginComponent.instance().state.error).toEqual("Missing fields");
     });
 
     test('No network API request', () => {
         loginComponent.setState(state);
-        loginComponent.instance().login();
+        loginComponent.instance().login(preventDefault);
         expect(loginComponent).toMatchSnapshot();
     });
 
@@ -49,9 +54,9 @@ describe('LoginComponent', () => {
         loginComponent.setState(state);
         // arguments for reply are (status, data, headers)
         mock.onGet('https://swapi.co/api/people/?search=FOO').reply(200, {
-            results: [{name: "C-3PO", birth_year: "112BBY"}],
+            results: [{ name: "C-3PO", birth_year: "112BBY" }],
         });
-        loginComponent.instance().login();
+        loginComponent.instance().login(preventDefault);
         expect(loginComponent).toMatchSnapshot();
     });
 
