@@ -44,7 +44,6 @@ class HomeComponent extends Component {
             cookie.save('name', user, { path: '/home' });
             this.setState({ user: user });
         } else {
-            console.warn(username);
             if(username){
                 this.setState({ user: cookie.load('name') });
             }else{
