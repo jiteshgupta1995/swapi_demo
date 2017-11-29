@@ -8,10 +8,12 @@ class LoginComponent extends Component {
 
     constructor(props) {
         super(props);
+
         this.login = this.login.bind(this);
         this.onChangeHandler = this.onChangeHandler.bind(this);
         this.apiSuccessCallback = this.apiSuccessCallback.bind(this);
         this.apiFailureCallback = this.apiFailureCallback.bind(this);
+        
         this.state = {
             username: '',
             dob: '',
@@ -22,21 +24,25 @@ class LoginComponent extends Component {
 
     login(event) {
         event.preventDefault();
+        
         this.setState({loader: true});
-        var apiBaseUrl = "https://swapi.co/api/people/?search=";
-        apiCall(apiBaseUrl + this.state.username)
+        let apiBaseUrl = "https://swapi.co/api/people/?search="+this.state.username;
+        
+        apiCall(apiBaseUrl)
             .then((resp) => this.apiSuccessCallback(resp))
             .catch((error) => this.apiFailureCallback(error));
     }
 
     apiSuccessCallback(resp) {
-        var len = resp.data.results.length;
+        let len = resp.data.results.length;
         let errorMsg = "Username does not exist";
-        for (var i = 0; i < len; i++) {
-            if (resp.data.results[i].name === this.state.username) {
+        const username = this.state.username;
+
+        for (let i = 0; i < len; i++) {
+            if (resp.data.results[i].name === username) {
                 if (resp.data.results[i].birth_year === this.state.dob) {
                     errorMsg = "";
-                    this.props.addUser(this.state.username);
+                    this.props.addUser(username);
                     this.props.history.push('/home');
                     return;
                 } else {
@@ -45,12 +51,13 @@ class LoginComponent extends Component {
                 break;
             }
         }
+
         this.setState({ error: errorMsg, loader: false });
     }
 
     apiFailureCallback(error) {
         this.setState({ error: "Error", loader: false });
-        console.error(error.response.status);
+        console.error(error);
     }
 
     onChangeHandler(event) {
@@ -58,7 +65,7 @@ class LoginComponent extends Component {
     }
 
     render() {
-        let loader = <div></div>;
+        let loader = null;
         if(this.state.loader){
             loader = <div className="loader"></div>
         }
@@ -116,6 +123,6 @@ LoginComponent.propTypes = {
 
 LoginComponent.defaultProps = {
     history: {},
-}
+};
 
 export default connect(null, { addUser })(LoginComponent);
