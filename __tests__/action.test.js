@@ -1,4 +1,4 @@
-import addUser, {SET_USER} from '../src/actions/user';
+import addUser, {SET_USER, REMOVE_USER, removeUser} from '../src/actions/user';
 import addSearch, {SET_SEARCH, REMOVE_SEARCH, removeSearch} from '../src/actions/search';
 
 describe('Actions', () => {
@@ -27,5 +27,12 @@ describe('Actions', () => {
             type: REMOVE_SEARCH,
         };
         expect(removeSearch()).toEqual(expectedAction)
+    });
+
+    it('should remove user result', () => {
+        const expectedAction = {
+            type: REMOVE_USER,
+        };
+        expect(removeUser()).toEqual(expectedAction)
     });
 });

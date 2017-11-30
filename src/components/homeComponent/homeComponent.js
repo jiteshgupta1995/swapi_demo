@@ -23,9 +23,7 @@ class HomeComponent extends Component {
         super(props);
 
         this.signout = this.signout.bind(this);
-        this.getResult = this.getResult.bind(this);
         this.onChangeHandler = this.onChangeHandler.bind(this);
-        this.timeoutCallback = this.timeoutCallback.bind(this);
         this.apiSuccessCallback = this.apiSuccessCallback.bind(this);
         this.apiFailureCallback = this.apiFailureCallback.bind(this);
 
@@ -55,7 +53,29 @@ class HomeComponent extends Component {
     signout() {
         cookie.remove('name', { path: '/home' });
         this.props.removeSearch();
+        this.props.removeUser();
         this.props.history.push('/');
+    }
+
+    onChangeHandler(e) {
+        const keyword = e.target.value;
+        let apiBaseUrl = "https://swapi.co/api/planets/?search=" + keyword;
+        
+        if (keyword.length < 2) {
+            clearTimeout(this.state.timer);
+            this.setState({
+                searchItem: [],
+                loader: false,
+            });
+            return;
+        }
+
+        clearTimeout(this.state.timer);
+        this.setState({
+            timer: setTimeout(()=>{
+                this.getResult(apiBaseUrl, keyword);
+            }, 500),
+        });
     }
 
     getResult(url, keyword) {
@@ -92,65 +112,13 @@ class HomeComponent extends Component {
         console.error(error);
     }
 
-    onChangeHandler(e) {
-        const keyword = e.target.value;
-        let apiBaseUrl = "https://swapi.co/api/planets/?search=" + keyword;
-        
-        if (keyword.length < 2) {
-            clearTimeout(this.state.timer);
-            this.setState({
-                searchItem: [],
-                loader: false,
-            });
-            return;
-        }
-
-        clearTimeout(this.state.timer);
-        this.setState({
-            timer: setTimeout(this.timeoutCallback(apiBaseUrl, keyword), 500),
-        });
-    }
-
-    timeoutCallback(apiBaseUrl, value) {
-        this.getResult(apiBaseUrl, value);
-    }
-
-    getSearchResult(){
-        let list = null;
-        const fontSize = 30;
-        
-        if (this.state.searchItem.length) {
-            list = <div className="response">
-                {this.state.searchItem.map((item,i) =>{
-                    let size = fontSize - i;
-                    let pop = item.population;
-                    if(item.population === "unknown"){
-                        pop = "0";
-                    }
-                    return(
-                        <div className="row" key={i}>
-                            <div className="col-xs-3" style={{fontSize:size+'px'}}>
-                                {item.name}
-                            </div>
-                            <div className="col-xs-3" style={{fontSize:size+'px'}}>
-                                {pop}
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>;
-        } else {
-            list = <div className="response">No result found.</div>;
-        }
-
-        return list;
-    }
-
     render() {
         let loader = null;
-        let searchResult = this.getSearchResult();
         if (this.state.loader) {
-            loader = <div className="loader"></div>;
+            loader = <div>
+                <div className="loader"></div>
+                <div id="overlay"></div>
+            </div>;
         } else {
             loader = null;
         }
@@ -182,6 +150,7 @@ class HomeComponent extends Component {
                                 className="form-control"
                                 id="userInput"
                                 onChange={this.onChangeHandler}
+                                disabled={this.state.loader}
                             />
                         </div>
                     </div>
@@ -189,9 +158,9 @@ class HomeComponent extends Component {
                 <div className="row">
                     <div className="col-xs-12">
                         <DashboardComponent
-                            list={searchResult}
-                            loader={loader}
+                            searchItem={this.state.searchItem}
                         />
+                        {loader}
                     </div>
                 </div>
             </div>
@@ -205,6 +174,7 @@ HomeComponent.propTypes = {
     history: PropTypes.object.isRequired,
     addSearch: PropTypes.func.isRequired,
     removeSearch: PropTypes.func.isRequired,
+    removeUser: PropTypes.func.isRequired,
 };
 
 HomeComponent.defaultProps = {

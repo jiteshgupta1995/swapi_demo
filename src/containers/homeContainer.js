@@ -1,8 +1,9 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import HomeComponent from "../homeComponent/homeComponent";
-import addSearch, {removeSearch} from "../../actions/search";
 import PropTypes from "prop-types";
+import { connect } from 'react-redux';
+import {removeUser} from "../actions/user";
+import addSearch, {removeSearch} from "../actions/search";
+import HomeComponent from "../components/homeComponent/homeComponent";
 
 const HomeContainer = (props) => {
     return(
@@ -12,6 +13,7 @@ const HomeContainer = (props) => {
             search={props.search}
             addSearch={props.addSearch}
             removeSearch={props.removeSearch}
+            removeUser={props.removeUser}
         />
     );
 };
@@ -29,6 +31,7 @@ HomeContainer.propTypes = {
     history: PropTypes.object.isRequired,
     addSearch: PropTypes.func,
     removeSearch: PropTypes.func,
+    removeUser: PropTypes.func,
 };
 
 HomeContainer.defaultProps = {
@@ -37,6 +40,7 @@ HomeContainer.defaultProps = {
     history: {},
     addSearch: addSearch(),
     removeSearch: removeSearch(),
+    removeUser: removeUser(),
 };
 
-export default connect(mapStateToProps, { addSearch, removeSearch })(HomeContainer);
+export default connect(mapStateToProps, { addSearch, removeSearch, removeUser })(HomeContainer);

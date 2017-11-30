@@ -18,22 +18,31 @@ describe('HomeComponent', () => {
         results: [{ name: "Pluto", population: "1000" }],
     });
 
-    const homeHistory = createMemoryHistory('/');
-    const component = shallow(
+    const callback = function(){return};
+    const history = createMemoryHistory('/home');
+    const invalidComponent = shallow(
         <HomeComponent
-            history={homeHistory}
+            history={history}
             user=""
-            addSearch={function(){return;}}
-            removeSearch={function(){return;}}
+            addSearch={callback}
+            removeSearch={callback}
+            removeUser={callback}
         />
     ).instance();
-    
+
+    test('invalid user, Signout success', () => {
+        expect(history.location.pathname).toEqual("/");
+        expect(invalidComponent).toMatchSnapshot();
+    });
+
+    const homeHistory = createMemoryHistory('/home');
     const homeComponent = shallow(
         <HomeComponent store={mockStore()}
             history={homeHistory}
             user="Some user"
-            addSearch={function(){return;}}
-            removeSearch={function(){return;}}
+            addSearch={callback}
+            removeSearch={callback}
+            removeUser={callback}
         />
     ).instance();
 
@@ -44,8 +53,9 @@ describe('HomeComponent', () => {
                 store={mockStore()}
                 history={history}
                 user=""
-                addSearch={function(){return;}}
-                removeSearch={function(){return;}}
+                addSearch={callback}
+                removeSearch={callback}
+                removeUser={callback}
             />
         );
         const userInput = component.find('input#userInput').length;
@@ -55,7 +65,7 @@ describe('HomeComponent', () => {
     });
 
     it('is calling API Success, sorts data', () => {
-        var resp = {
+        let resp = {
             data: {
                 results: [
                     { name: "Pluto", population: "500" },
@@ -65,7 +75,7 @@ describe('HomeComponent', () => {
                 ],
             },
         };
-        var sorted = [
+        let sorted = [
             { name: "Earth", population: "10000" },
             { name: "Venus", population: "600" },
             { name: "Pluto", population: "500" },
@@ -80,7 +90,7 @@ describe('HomeComponent', () => {
     });
 
     it('is searching for min 2 characters', () => {
-        var event = {
+        let event = {
             target: {
                 value: "p",
             },
@@ -88,7 +98,9 @@ describe('HomeComponent', () => {
         homeComponent.onChangeHandler(event);
         expect(homeComponent.state.timer).toEqual(null);
         event.target.value = "pl";
+        jest.useFakeTimers();
         homeComponent.onChangeHandler(event);
+        jest.runAllTimers();
         expect(homeComponent.state.timer).not.toEqual(null);
     });
 
@@ -99,7 +111,15 @@ describe('HomeComponent', () => {
     });
 
     test('found result from redux store and api is working', () => {
-        var store = {
+        let store = {
+            result: {
+                name: "Earth",
+                population: "1000",
+            },
+            keyword: "ea",
+        };
+        homeComponent.props.search.push(store);
+        store = {
             result: {
                 name: "Pluto",
                 population: "unknown",
@@ -109,26 +129,5 @@ describe('HomeComponent', () => {
         homeComponent.props.search.push(store);
         homeComponent.getResult("https://swapi.co/api/planets/?search=pl", "pl");
         expect(homeComponent).toMatchSnapshot();
-    });
-
-    test('invalid user', () => {
-        const history = createMemoryHistory('/home');
-        
-        component.signout();
-        expect(history.location.pathname).toEqual("/");
-    });
-
-    test('Signout success', () => {
-        const history = createMemoryHistory('/home');
-        const component = shallow(
-            <HomeComponent
-                history={homeHistory}
-                user="Some user"
-                addSearch={function(){return;}}
-                removeSearch={function(){return;}}
-            />
-        ).instance();
-        component.signout();
-        expect(history.location.pathname).toEqual("/");
     });
 });

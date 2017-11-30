@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
-import { apiCall } from "../../helper/NetworkRequest";
-import { connect } from 'react-redux';
-import addUser from "../../actions/user";
 import PropTypes from "prop-types";
+import { apiCall } from "../../helper/NetworkRequest";
 
 class LoginComponent extends Component {
 
@@ -67,7 +65,10 @@ class LoginComponent extends Component {
     render() {
         let loader = null;
         if(this.state.loader){
-            loader = <div className="loader"></div>
+            loader = <div>
+                <div className="loader"></div>
+                <div id="overlay"></div>
+            </div>;
         }
         return (
             <div className="container">
@@ -98,6 +99,8 @@ class LoginComponent extends Component {
                                     required
                                 />
                             </div>
+                            <span className="danger">{this.state.error}</span>
+                            <br />
                             <button
                                 id="loginButton"
                                 className="btn btn-primary btn-block"
@@ -105,8 +108,6 @@ class LoginComponent extends Component {
                             >
                             LOGIN
                             </button>
-                            <br />
-                            <span className="danger">{this.state.error}</span>
                         </form>
                         {loader}
                     </div>
@@ -118,11 +119,11 @@ class LoginComponent extends Component {
 
 LoginComponent.propTypes = {
     history: PropTypes.object.isRequired,
-    addUser: PropTypes.func,
+    addUser: PropTypes.func.isRequired,
 };
 
 LoginComponent.defaultProps = {
     history: {},
 };
 
-export default connect(null, { addUser })(LoginComponent);
+export default LoginComponent;

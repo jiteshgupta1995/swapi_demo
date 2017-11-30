@@ -14,6 +14,10 @@ In the project folder open the terminal and type
 
 #### `npm install`
 
+After, installation. Build webpack using command
+
+#### `npm run webpack`
+
 ## Running application
 
 In the project directory, you can run:
@@ -29,8 +33,6 @@ In the project directory, you can run:
 
 #### `npm test`
 
-## Running webpack
+for removing old snapshots, run:
 
-In the project directory, you can run:
-
-#### `npm run webpack`
+#### `npm test -- -u`

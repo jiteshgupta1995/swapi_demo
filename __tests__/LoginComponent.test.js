@@ -13,7 +13,7 @@ var mock = new MockAdapter(axios);
 
 describe('LoginComponent', () => {
 
-    let loginComponent = shallow(<LoginComponent store={mockStore()} />).dive();
+    let loginComponent = shallow(<LoginComponent store={mockStore()} />);
     const resp = {
         data: {
             results: [{ name: "C-3PO", birth_year: "112BBY" }],
@@ -78,7 +78,12 @@ describe('LoginComponent', () => {
 
     test('Login success', () => {
         const history = createMemoryHistory('/');
-        const component = shallow(<LoginComponent store={mockStore()} history={history} />).dive();
+        const component = shallow(
+            <LoginComponent
+                store={mockStore()}
+                history={history}
+                addUser={function(){return;}}
+            />);
         component.setState({
             username: "C-3PO",
             dob: "112BBY",
