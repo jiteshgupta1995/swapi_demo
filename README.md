@@ -14,10 +14,6 @@ In the project folder open the terminal and type
 
 #### `npm install`
 
-After, installation. Build webpack using command
-
-#### `npm run webpack`
-
 ## Running application
 
 In the project directory, you can run:
@@ -30,9 +26,5 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 ## Testing application
 
 In the project directory, you can run:
-
-#### `npm test`
-
-for removing old snapshots, run:
 
 #### `npm test -- -u`

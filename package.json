@@ -5,6 +5,7 @@
   "dependencies": {
     "axios": "^0.17.0",
     "babel-eslint": "^8.0.2",
+    "concurrently": "^3.5.1",
     "eslint": "^4.10.0",
     "eslint-config-defaults": "^9.0.0",
     "eslint-plugin-flowtype": "^2.39.1",
@@ -24,11 +25,10 @@
     "webpack": "^3.8.1"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "concurrently 'react-scripts start' './node_modules/.bin/webpack --config webpack.config.js --watch'",
     "build": "react-scripts build",
     "test": "jest --no-cache",
-    "eject": "react-scripts eject",
-    "webpack": "./node_modules/.bin/webpack --config webpack.config.js"
+    "eject": "react-scripts eject"
   },
   "jest": {
     "setupFiles": [
