@@ -104,7 +104,6 @@ describe('HomeComponent', () => {
         expect(homeComponent.state.timer).not.toEqual(null);
     });
 
-
     test('No network API request', () => {
         homeComponent.getResult("https://swapi.co/api/planets/?search=ab", "ab");
         expect(homeComponent).toMatchSnapshot();

@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from "prop-types";
 import { connect } from 'react-redux';
 import addUser from "../actions/user";
+import { bindActionCreators } from 'redux';
 import LoginComponent from "../components/loginComponent/loginComponent";
 
 const loginContainer = (props) =>{
@@ -13,6 +14,12 @@ const loginContainer = (props) =>{
     );
 };
 
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators({
+        addUser: addUser,
+    }, dispatch);
+}
+
 loginContainer.propTypes = {
     history: PropTypes.object.isRequired,
     addUser: PropTypes.func,
@@ -20,7 +27,7 @@ loginContainer.propTypes = {
 
 loginContainer.defaultProps = {
     history: {},
-    addUser: addUser(),
+    addUser: addUser,
 };
 
-export default connect(null, { addUser })(loginContainer);
+export default connect(null, mapDispatchToProps)(loginContainer);

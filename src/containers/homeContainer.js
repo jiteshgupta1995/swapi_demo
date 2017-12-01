@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from "prop-types";
 import { connect } from 'react-redux';
 import {removeUser} from "../actions/user";
+import { bindActionCreators } from 'redux';
 import addSearch, {removeSearch} from "../actions/search";
 import HomeComponent from "../components/homeComponent/homeComponent";
 
@@ -25,6 +26,14 @@ function mapStateToProps(state) {
     };
 }
 
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators({
+        addSearch: addSearch,
+        removeSearch: removeSearch,
+        removeUser: removeUser,
+    }, dispatch);
+}
+
 HomeContainer.propTypes = {
     user: PropTypes.string.isRequired,
     search: PropTypes.array.isRequired,
@@ -38,9 +47,9 @@ HomeContainer.defaultProps = {
     user: "",
     search: [],
     history: {},
-    addSearch: addSearch(),
-    removeSearch: removeSearch(),
-    removeUser: removeUser(),
+    addSearch: addSearch,
+    removeSearch: removeSearch,
+    removeUser: removeUser,
 };
 
-export default connect(mapStateToProps, { addSearch, removeSearch, removeUser })(HomeContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(HomeContainer);
