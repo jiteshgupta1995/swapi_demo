@@ -1,0 +1,123 @@
+//colors
+$loader_border: #f3f3f3;
+$black: #000;
+$red: #f00;
+$yellow: #ffe300;
+$white: white;
+$black_50: rgba(0,0,0,0.5);
+$pixel150: 150px;
+$pixel50: 50px;
+$percent50: 50%;
+//urls
+$bg_url: url("star wars.jpg");
+@mixin border-radius($radius) {
+  -webkit-border-radius: $radius;
+     -moz-border-radius: $radius;
+      -ms-border-radius: $radius;
+          border-radius: $radius;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: $bg_url no-repeat;
+}
+.loader {
+  position: absolute;
+  left: $percent50;
+  top: $percent50;
+  z-index: 1;
+  width: $pixel150;
+  height: $pixel150;
+  margin: 40px 0 0 -30px;
+  border: 7px solid $loader_border;
+  @include border-radius(50px);
+  border-top: 7px solid $black;
+  width: $pixel50;
+  height: $pixel50;
+  animation: spin 2s linear infinite;
+}
+@-webkit-keyframes spin {
+  0% {
+  }
+  100% {
+  }
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.animate-bottom {
+  position: relative;
+  animation-name: animatebottom;
+  animation-duration: 1s;
+}
+@-webkit-keyframes animatebottom {
+  from {
+    bottom: -100px;
+    opacity: 0;
+  }
+  to {
+    bottom: 0;
+    opacity: 1;
+  }
+}
+@keyframes animatebottom {
+  from {
+    bottom: -100px;
+    opacity: 0;
+  }
+  to {
+    bottom: 0;
+    opacity: 1;
+  }
+}
+.float-right {
+  float: right;
+}
+.danger {
+  color: $red;
+}
+.yellow {
+  color: $yellow;
+}
+.center {
+  text-align: center;
+}
+.form-box {
+  background: $white;
+  padding: 20px;
+  @include border-radius(10px);
+}
+.margin-top25 {
+  margin-top: 25px;
+}
+.response {
+  background-color: $white;
+  min-height: 300px;
+  height: auto;
+  padding: 10px;
+}
+.jumbo {
+  font-size: 65px;
+}
+.row {
+  margin: 0 !important;
+}
+#overlay {
+  position: fixed;
+  display: block;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: $black_50;
+  z-index: 2;
+  cursor: pointer;
+}

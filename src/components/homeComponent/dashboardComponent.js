@@ -1,54 +1,47 @@
 import React from "react";
-import RaisedButton from "material-ui/RaisedButton";
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import PropTypes from "prop-types";
 
-const dashboardComponent = ({user, signout, onChangeHandler, list}) =>{
-    return(
-        <MuiThemeProvider>
-            <div className="row">
-                <div className="row">
-                    <div className="col-xs-offset-4 col-xs-4">
-                        <h1>Welcome! {user}</h1>
+const dashboardComponent = ({ searchItem }) => {
+
+    let list = null;
+    const fontSize = 30;
+    if (searchItem.length) {
+        list = <div className="response">
+            {searchItem.map((item,i) =>{
+                let size = fontSize - i;
+                let pop = item.population;
+                if(item.population === "unknown"){
+                    pop = "0";
+                }
+                return(
+                    <div className="row" key={i}>
+                        <div className="col-xs-3" style={{fontSize:size+'px'}}>
+                            {item.name}
+                        </div>
+                        <div className="col-xs-3" style={{fontSize:size+'px'}}>
+                            {pop}
+                        </div>
                     </div>
-                    <div className="col-xs-4">
-                        <RaisedButton
-                            className="float-right"
-                            label="Signout"
-                            primary={true}
-                            onClick={signout}
-                        />
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="form-group">
-                        <label>Enter text</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            id="userInput"
-                            onChange={onChangeHandler}
-                        />
-                    </div>
-                </div>
-                <div className="row">
-                    {list}
-                </div>
-            </div>
-        </MuiThemeProvider>
+                );
+            })}
+        </div>;
+    } else {
+        list = <div className="response">No result found.</div>;
+    }
+
+    return (
+        <div className="row">
+            {list}
+        </div>
     );
 };
 
 dashboardComponent.propTypes = {
-    user: PropTypes.string.isRequired,
-    list: PropTypes.object.isRequired,
-    signout: PropTypes.func.isRequired,
-    onChangeHandler: PropTypes.func.isRequired,
+    searchItem: PropTypes.array.isRequired,
 };
 
 dashboardComponent.defaultProps = {
-    user: "Logged in user",
-    list: {},
+    searchItem: [],
 };
 
 export default dashboardComponent;
